@@ -1,0 +1,6 @@
+from django.contrib import admin
+from turk.mapreduce.models import *
+
+admin.site.register(HitType)
+admin.site.register(Problem)
+admin.site.register(Result)

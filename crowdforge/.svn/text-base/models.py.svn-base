@@ -1,0 +1,89 @@
+from django.db import models
+
+class HitType(models.Model):
+    """
+    Represents a type of HIT on Mechanical Turk. 
+    For example, this can be an arch or a work HIT.
+    
+    This is a prototype for Hit
+    """
+    # templated parameters
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
+    body = models.TextField()
+    # some basic and necessary fields
+    keywords = models.CharField(max_length=200)
+    max_assignments = models.IntegerField(default=1)
+    payment = models.FloatField(default=0.05)
+    duration = models.IntegerField(default=30)
+    approval_delay = models.IntegerField(default=60*3)
+    lifetime = models.IntegerField(default=60*24)
+    
+    def __unicode__(self):
+        return self.title
+
+class Problem(models.Model):
+    """
+    Represents a problem to solve using TurkMapReduce
+    """
+    STEPS = (
+        ('S', 'Start'),
+        ('P', 'Partition'),
+        ('M', 'Map'),
+        ('R', 'Reduce'),
+        ('E', 'End'),
+    )
+    name = models.CharField(max_length=100)
+    step = models.CharField(max_length=1, choices=STEPS, default='Start')
+    partition = models.ForeignKey(HitType, related_name='problem_partition')
+    partition2 = models.ForeignKey(HitType, blank=True, null=True, related_name='problem_partition2')
+    mapper = models.ForeignKey(HitType, related_name='problem_mapper')
+    reducer = models.ForeignKey(HitType, related_name='problem_reducer')
+    
+    def __unicode__(self):
+        return self.name
+
+class Hit(models.Model):
+    """
+    Represents a HIT on Mechanical Turk.
+    This row/object is 1:1 with an MTurk HIT
+    """
+    # the HIT ID on MTurk
+    hit_id = models.CharField(max_length=100)
+    hit_type = models.ForeignKey(HitType)
+    problem = models.ForeignKey(Problem)
+    # extra data to identify the HIT if it's part of a partition
+    part = models.CharField(max_length=200, blank=True)
+    # optional fields for overriding title and description
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
+    body = models.TextField()
+    
+    is_active = models.BooleanField(default=True)
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ('turk.mapreduce.views.hit', [str(self.id)])
+        
+    def __unicode__(self):
+        return self.title[:20] + '... #' + self.hit_id
+    
+class Result(models.Model):
+    """
+    Represents the result of a HIT on Mechanical Turk.
+    
+    There can be many results for a single MTurk HIT
+    """
+    # the assignment ID on MTurk
+    assignment_id = models.CharField(max_length=100)
+    hit = models.ForeignKey(Hit)
+    # JSON data for the result value
+    value = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return 'Result for \"' + str(self.hit) + '\"'
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ('turk.mapreduce.views.result', [str(self.id)])

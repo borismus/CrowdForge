@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>{{ problem.name }} | Overview</title>
+  <meta name="author" content="Boris Smus">
+  <style>
+    body {
+      font-family: "Helvetica Neue";
+      font-weight: 300;
+    }
+    h1 {
+      text-transform: uppercase;
+    }
+    h1, h2 {
+      font-weight: normal;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td, th {
+      border: 1px solid #aaa;
+      padding: 3px;
+      text-align: left;
+    }
+    th {
+      font-weight: normal;
+      width: 200px;
+    }
+    td {
+      color: darkgreen;
+    }
+    .step {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>{{ problem.name }}</h1>
+  
+  <table>
+  Current step: <span class="step">{{ problem.get_step_display }}</span><br/>
+  Number of HITs: <span class="step">{{ number }}</span><br/>
+  Cost: <span class="step">{{ cost }}</span><br/>
+  Duration: <span class="step">{{ duration }}</span><br/>
+  
+  <h2>Partition HITs</h2>
+  <table>
+    {% for hit in partition %}
+    <tr>
+      <th title="{{ hit.title }} (${{ hit.hit_type.payment }})">{{ hit.title|truncatewords:10 }}</th>
+      {% for result in hit.result_set.all %}
+      <td title="{{ result.value }}"><a href="{{result.get_absolute_url}}">{{ result.value|truncatewords:7 }}</a></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  
+  {% if partition2 %}
+  <h2>Second Partition HITs</h2>
+  <table>
+    {% for hit in partition2 %}
+    <tr>
+      <th title="{{ hit.title }} (${{ hit.hit_type.payment }})">{{ hit.title|truncatewords:10 }}</th>
+      {% for result in hit.result_set.all %}
+      <td title="{{ result.value }}"><a href="{{result.get_absolute_url}}">{{ result.value|truncatewords:7 }}</a></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+  
+  <h2>Map HITs</h2>
+  <table>
+    {% for hit in map %}
+    <tr>
+      <th title="{{ hit.title }} (${{ hit.hit_type.payment }})">{{ hit.title|truncatewords:10 }}</th>
+      {% for result in hit.result_set.all %}
+      <td title="{{ result.value }}"><a href="{{result.get_absolute_url}}">{{ result.value|truncatewords:7 }}</a></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  
+  {% if reduce %}
+  <h2>Reduce HITs</h2>
+  <table>
+    {% for hit in reduce %}
+    <tr>
+      <th title="{{ hit.title }} (${{ hit.hit_type.payment }})">{{ hit.title|truncatewords:10 }}</th>
+      {% for result in hit.result_set.all %}
+      <td title="{{ result.value }}"><a href="{{result.get_absolute_url}}">{{ result.value|truncatewords:7 }}</a></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</body>
+</html>

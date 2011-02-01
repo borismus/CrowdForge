@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>{{ title }}</title>
+  <meta name="author" content="Boris Smus">
+  <style>
+  table {
+    border-collapse: collapse;
+  }
+  td, th {
+    border: 1px solid #aaa;
+    padding: 3px;
+    text-align: left;
+  }
+  th {
+    font-weight: normal;
+    width: 200px;
+  }
+  td {
+    color: darkgreen;
+  }
+  </style>
+</head>
+<body>
+  <table>
+  {% for key, value in value_dict.items %}
+    <tr>
+      <th>{{ key }}</th>
+      <td>{{ value }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+</body>
+</html>

@@ -1,0 +1,55 @@
+from django.core.management.base import BaseCommand, CommandError
+from optparse import make_option
+import os
+import sys
+
+from mapreduce.models import *
+import mapreduce
+
+class Command(BaseCommand):
+    help='solve problems'
+    
+    def handle(self, **options):
+        # go through all active HITs and get any new results that may have
+        # come in from MTurk
+        active_hits = Hit.objects.filter(is_active=True)
+        
+        for hit in active_hits:
+            results = mapreduce.fetch_results(hit)
+            print "Fetched %s new results for %s." %(len(results), str(hit))
+        
+        # try to move active problems to their next stage
+        active_problems = Problem.objects.exclude(step='E')
+        
+        for problem in active_problems:
+            if problem.step == 'S':
+                mapreduce.do_partition(problem)
+                # switch to partition step
+                problem.step = 'P'
+                problem.save()
+                print "%s: Created partition HITs" % str(problem)
+            elif problem.step == 'P':
+                if mapreduce.can_map(problem):
+                    mapreduce.do_map(problem)
+                    # switch to the map step
+                    problem.step = 'M'
+                    problem.save()
+                    print "%s: Created map HITs."  % str(problem)
+                else:
+                    print "%s: Could not map. Partition probably isn't done yet." % str(problem)
+            elif problem.step == 'M':
+                if mapreduce.can_reduce(problem):
+                    mapreduce.do_reduce(problem)
+                    # switch to the reduce step
+                    problem.step = 'R'
+                    problem.save()
+                    print "%s: Created reduce HITs." % str(problem)
+                else:
+                    print "%s: Could not reduce. Mapping probably isn't done yet." % str(problem)
+            elif problem.step == 'R':
+                if mapreduce.did_finish(problem):
+                    problem.step = 'E'
+                    problem.save()
+                    print "%s: Finished!" % str(problem)
+                else:
+                    print "%s: Could not finish. Reduction probably isn't done yet." % str(problem)
