@@ -1,3 +1,81 @@
 CrowdForge: Crowdsourcing Complex Work
+(released for non-commercial use creativecommons.org/licenses/by-nc/3.0/)
 
-Released for non-commercial use creativecommons.org/licenses/by-nc/3.0/ 
+Getting CrowdForge to run locally:
+
+1. Prerequisites: python, django, boto (tested with python-2.7,
+django-1.2.5 and boto-1.8d). Known issues with boto-1.9b.
+  - NOTE: There's a bug in boto-1.8d that you need to tweak. 
+    Change connection.py:466 to say
+    
+      value = self.connection.get_utf8_value(value)
+
+    (instead of)
+
+      value = self.get_utf8_value(value)
+
+2. Download: go to https://github.com/borismus/CrowdForge and get the
+tarball.
+3. Extract: let's say to ~/crowdforge
+4. Configure: tweak settings.py
+  - specify AWS keys found at URL:
+    https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key
+  - specify absolute URL to your templates directory
+5. Create database: run ./manage.py syncdb, create new account
+6. Run server: run ./manage.py runserver
+7. Test! 
+8. Setup cron jobs!
+
+Testing CrowdForge
+
+1. Point browser to localhost:8000/admin (or whatever your production
+server URL is) and login.
+2. Add a new Problem instance. Give it a name and these parameters
+  - flow: SimpleFlow, 
+  - partition: create article
+  - map: collect a fact
+  - reduce: write a paragraph
+3. Run `./manage.py poll` manually, and a HIT should be created (check
+the MTurk server)
+  - expected output: 
+4. Do a sample HIT from the new HIT group
+5. Run `./manage.py poll` again, and a Result should be created locally
+(look in db or check http://localhost:8000/turk/problem/YOUR_PROBLEM_ID)
+  - expected output: results retrieved [<Result: Result for "Create an
+    Article Ou... #141KMADQXJEYF9EQWEG9UA7S6J5JEW">]
+
+Setting up Cron Jobs
+
+0. Basically, you want to run `./manage.py poll` periodically
+1. So just tweak your crontab
+  - `crontab -e`
+  - Create a line that says something like
+  "*/15 * * * * /path/to/manage.py poll >> /path/to/crowdforge.log" 
+
+
+Getting CrowdForge deployed on a production server:
+
+1. Get CrowdForge running locally (as per instructions above)
+2. Get django and crowdforge running on a public facing server
+3. Tweak settings.py:
+  - specify external URL of your server in settings.py
+  - switch from sandbox to production
+  - change the database engine to be mysql or postgresql
+4. Resync database
+5. Do a test
+6. Setup cron jobs
+
+Advanced: Make your own Hit Types
+
+1. Open management console (localhost:8000/admin or whatever)
+2. Add a new Hit Type.
+3. Specify title, description and body. These fields can all be
+parametrized, depending on your flow.
+
+Advanced: Make your own flow
+
+1. Open crowdforge/flows.py
+2. Create your own subclass of Flow. See SimpleFlow for an example.
+3. Don't forget to register your new flow using
+  
+  register('MyNewFlow', MyNewFlow)
