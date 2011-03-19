@@ -80,7 +80,7 @@ class Hit(models.Model):
         
     @models.permalink
     def get_absolute_url(self):
-        return ('turk.crowdforge.views.hit', [str(self.id)])
+        return ('crowdforge.views.hit', [str(self.id)])
         
     def __unicode__(self):
         return self.title[:20] + '... #' + self.hit_id
@@ -102,4 +102,4 @@ class Result(models.Model):
         
     @models.permalink
     def get_absolute_url(self):
-        return ('turk.crowdforge.views.result', [str(self.id)])
+        return ('crowdforge.views.result', [str(self.id)])

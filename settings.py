@@ -9,12 +9,15 @@ ADMINS = (
 
 # Amazon settings
 
-AWS_ACCESS_KEY_ID = 'TODO: replace with your AWS Key Id'
-AWS_SECRET_ACCESS_KEY = 'TODO: replace with your AWS Secret Access Key'
+# TODO: Update these to reflect your own values from
+# https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key
+AWS_ACCESS_KEY_ID = 'JIBBERISH'
+AWS_SECRET_ACCESS_KEY = 'Ev73nMoReJiBBerISH'
 # TODO: Swap comments on next two lines for production
 AWS_HOST = 'mechanicalturk.sandbox.amazonaws.com'
 # AWS_HOST = 'mechanicalturk.amazonaws.com'
-URL_ROOT = 'TODO: change URL root to external URL of your CrowdForge instance'
+# TODO: Update with your externally accessible URL ROOT
+URL_ROOT = 'http://localhost:8000'
 
 MANAGERS = ADMINS
 
@@ -72,13 +75,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'turk.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/boris/Documents/School/CMU Spring 2010/Turk Independent Study/turk/templates'
+    '/Users/boris/Projects/CrowdForge/templates'
 )
 
 INSTALLED_APPS = (
@@ -87,5 +90,5 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'turk.crowdforge'
+    'crowdforge'
 )
